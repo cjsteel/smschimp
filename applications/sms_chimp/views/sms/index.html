@@ -1,0 +1,48 @@
+{{extend 'layout.html'}}
+<style>
+    #typeheader {position: relative;}
+    .typeheader {background:white; border:solid 1px #55A6C8;}
+    .typeheader DIV {padding: 2px 4px 2px 4px;}
+    .group_selector:hover{
+        background:#0066FF;
+        color:white
+    }
+</style>
+<form class="form-horizontal" action="/sms_chimp/sms/send_sms" method ="POST">
+  <div class="control-group">
+    <label class="control-label" for="groups">Send To</label>
+    <div class="controls">
+       <input type="text" name="groups" id="groups" placeholder="Input Groups Name"/>
+        <div style="position: absolute;" id="typeheader" class="typeheader"></div>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="message">Message</label>
+    <div class="controls">
+        <textarea rows="6" id ="message" name="message" style="min-width:300px"></textarea>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn">Send</button>
+    </div>
+  </div>
+</form>
+<script>
+    $('#groups').keyup(function(){
+    	 $('#typeheader').html('')
+    	var groups_name = $('#groups').val().split(',')
+    	var query = groups_name[groups_name.length-1]
+        if (query.length >3 ){
+        	$.get('/sms_chimp/sms/group_selector', { query: query }, function (data) {
+                 $('#typeheader').html(data)
+            });
+        }
+    });
+    function add_new_group(groupname){
+    	var currentStr = $('#groups').val();
+    	var newString = currentStr.substring(0,currentStr.lastIndexOf(',')+1)+groupname+','
+    	$('#groups').val(newString)
+    	$('#typeheader').html('')
+    }
+</script>

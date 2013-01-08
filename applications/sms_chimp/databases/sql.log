@@ -1,0 +1,141 @@
+timestamp: 2012-12-27T10:01:16.997000
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    username VARCHAR(128),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:01:17.058000
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:01:17.066000
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:01:17.083000
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:01:17.091000
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:01:17.098000
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:02:27.267000
+CREATE TABLE contact_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_name VARCHAR(255) UNIQUE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:03:34.627000
+ALTER TABLE contact_group ADD name VARCHAR(255) UNIQUE;
+success!
+timestamp: 2012-12-27T10:03:34.654000
+ALTER TABLE contact_group DROP COLUMN group_name;
+success!
+timestamp: 2012-12-27T10:03:52.032000
+CREATE TABLE contact(
+    id INT AUTO_INCREMENT NOT NULL,
+    name VARCHAR(200),
+    phone_number VARCHAR(30),
+    dob DATE,
+    contact_group_id INT, INDEX contact_group_id__idx (contact_group_id), FOREIGN KEY (contact_group_id) REFERENCES contact_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2012-12-27T10:05:54.571000
+ALTER TABLE contact_group ADD name__tmp VARCHAR(100) UNIQUE;
+success!
+UPDATE contact_group SET name__tmp=name;
+success!
+ALTER TABLE contact_group DROP COLUMN name;
+success!
+ALTER TABLE contact_group ADD name VARCHAR(100) UNIQUE;
+success!
+UPDATE contact_group SET name=name__tmp;
+success!
+ALTER TABLE contact_group DROP COLUMN name__tmp;
+success!
+timestamp: 2012-12-27T10:10:30.861000
+ALTER TABLE auth_user DROP COLUMN username;
+success!
+timestamp: 2012-12-27T11:45:10.645000
+ALTER TABLE contact_group ADD modified_on DATETIME;
+success!
+timestamp: 2012-12-27T11:45:10.660000
+ALTER TABLE contact ADD group_name VARCHAR(100);
+success!
+timestamp: 2012-12-27T11:45:10.670000
+ALTER TABLE contact ADD modified_on DATETIME;
+success!
+timestamp: 2012-12-27T12:52:02.899000
+ALTER TABLE contact ADD uuid VARCHAR(64);
+success!
+timestamp: 2012-12-27T13:06:25.464000
+ALTER TABLE contact DROP COLUMN uuid;
+success!
+timestamp: 2013-01-07T10:53:51.725000
+ALTER TABLE auth_user ADD access_token VARCHAR(255);
+success!
+timestamp: 2013-01-07T10:53:51.917000
+ALTER TABLE auth_user ADD app_id VARCHAR(255);
+success!
+timestamp: 2013-01-08T10:00:56.971000
+ALTER TABLE contact_group ADD user_uid INT, ADD INDEX user_uid__idx (user_uid), ADD FOREIGN KEY (user_uid) REFERENCES auth_user (id) ON DELETE CASCADE;
+success!
+timestamp: 2013-01-08T10:00:57.078000
+ALTER TABLE contact ADD user_uid INT, ADD INDEX user_uid__idx (user_uid), ADD FOREIGN KEY (user_uid) REFERENCES auth_user (id) ON DELETE CASCADE;
+success!
+timestamp: 2013-01-08T10:28:18.184000
+ALTER TABLE contact_group ADD name__tmp VARCHAR(100);
+success!
+UPDATE contact_group SET name__tmp=name;
+success!
+ALTER TABLE contact_group DROP COLUMN name;
+success!
+ALTER TABLE contact_group ADD name VARCHAR(100);
+success!
+UPDATE contact_group SET name=name__tmp;
+success!
+ALTER TABLE contact_group DROP COLUMN name__tmp;
+success!
