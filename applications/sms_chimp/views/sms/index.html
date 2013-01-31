@@ -10,6 +10,12 @@
 </style>
 <form class="form-horizontal" action="/sms_chimp/sms/send_sms" method ="POST">
   <div class="control-group">
+    <label class="control-label" for="campaign_name">Campaign name</label>
+    <div class="controls">
+       <input type="text" name="campaign_name" id="campaign_name" placeholder="Let it blank if you don't wanna create a campaign"/>
+    </div>
+  </div>
+  <div class="control-group">
     <label class="control-label" for="groups">Send To</label>
     <div class="controls">
        <input type="text" name="groups" id="groups" placeholder="Input Groups Name"/>

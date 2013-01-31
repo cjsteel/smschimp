@@ -5,12 +5,15 @@ import csv
 @auth.requires_login()
 def index(): 
     export_csv_link = A('export csv',_href=URL('contact_management','export_contact_to_csv'),_class='btn')
-    formcsv = FORM(str(T('Import from csv file')) + " ",
+    formcsv = FORM("Default Prefix : ", 
+                       INPUT(_type='text',_name ='default_prefix',_value=auth.user.default_prefix,_style ="max-width:50px"),
+                       BR(),
+                       str(T('Import from csv file')) + " ",
                        INPUT(_type='file', _name='csvfile'),
                        INPUT(_type='submit', _value=T('import')))
     if formcsv.process().accepted:
         try:
-            import_contact_from_csv(request.vars.csvfile.file)
+            import_contact_from_csv(request.vars.default_prefix,request.vars.csvfile.file)
             response.flash = 'Import data successful'
         except Exception, e:
             response.flash = DIV(T('unable to parse csv file'), PRE(str(e)))
@@ -34,14 +37,14 @@ def export_contact_to_csv():
     return s.getvalue()
     
    
-def import_contact_from_csv(file):
+def import_contact_from_csv(prefix,file):
         csv_data = csv.reader(file)
         for row in csv_data:                               
             group_id = db(db.contact_group.user_uid == auth.user.id)(db.contact_group.name == row[3]).select().first()
             if not group_id :
                group_id = db.contact_group.insert(name=row[3])
-  
-            current_contact = db(db.contact.user_uid == auth.user.id)(db.contact.phone_number == row[1]).select().first()
+            phone_number = (row[1][0] =='+' and row[1]) or  prefix + row[1]
+            current_contact = db(db.contact.user_uid == auth.user.id)(db.contact.phone_number == phone_number).select().first()
             if current_contact:
                current_contact.name = row[0]
                current_contact.dob = row[2]
@@ -49,7 +52,8 @@ def import_contact_from_csv(file):
                current_contact.contact_group_id = group_id
                current_contact.update_record()
             else :
-               db.contact.insert(name = row[0],phone_number = row[1],dob = row[2],group_name = row[3],contact_group_id = group_id)
+               
+               db.contact.insert(name = row[0],phone_number = phone_number or row[0],dob = row[2],group_name = row[3],contact_group_id = group_id)
 
 
 def get_contacts_of_group():
@@ -74,8 +78,8 @@ def update_contact():
        session.flash = "Invaild data"
     
 def search_group_name():
-    query =  request.vars.query +"%"
-    groups = db(db.contact_group.user_uid == auth.user.id)(db.contact_group.name.like(query)).select(db.contact_group.name)
+    query =  request.vars.query
+    groups = db(db.contact_group.user_uid == auth.user.id).select(db.contact_group.name).find(lambda row:row.name.startswith(query))  
     return_groups = [group.name for group in groups]
     response.headers['Content-Type'] = 'application/json'
     return response.json(return_groups)

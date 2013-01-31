@@ -27,7 +27,8 @@ response.google_analytics_id = None
 response.menu = [
     (T('Home'), False, URL('default','index'), []),
     (T("Let's send SMS"),False, URL('sms','index'), []),
-    (T('Contact management'), False, URL('default','contact_management'), [])
+    (T('Contact management'), False, URL('default','contact_management'), []),
+    (T('Campaign history'), False, URL('campaign','index'), [])
 ]
 
 DEVELOPMENT_MENU = False
