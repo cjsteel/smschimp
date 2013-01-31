@@ -1,0 +1,65 @@
+{{extend 'layout.html'}}
+<h1>Your history campaign</h1>
+{{=form}}
+
+<div id="summary" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-body">
+      <div id="pie_chart" style="padding: 0px; position: relative;width:400px;height:300px"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id ="resend_sms">Resend Unsuccess SMS</button>
+  </div>
+</div>
+
+<script type ="text/javascript">
+    $('#summary').modal({show:false})
+	function drawPieChart(data){
+		$.plot($("#pie_chart"),data,{
+			series: {
+				pie: { 
+					show: true,
+					radius: 1,
+					label: {
+						show: true,
+						radius: 3/4,
+						formatter: function(label, series){
+							return '<div style="font-size:9pt;text-align:center;padding:2px;color:white;">'+label+'<br/>'+Math.round(series.percent)+' </div>';
+						},
+						background: { opacity: 0.5,color:"black"},
+						threshold: 0.1
+					}
+				}
+			 },
+			 legend: {
+				show: false
+			 }
+		});
+	}
+    function summaryOnClick(id){
+     	$.ajax({
+          type: "POST",
+          url: "/sms_chimp/campaign/get_summary",
+          data: {id:id}
+       }).done(function(result) {
+            $('#resend_sms').click(function(){
+            	$.ajax({
+          			type: "POST",
+          			url: "/sms_chimp/campaign/resend_sms",
+          			data: {id:id}
+                }).done(function(status){
+                	
+                })
+            });
+            $('#summary').modal('show')
+            $('#summary').on('shown', function () {
+                var data = []
+                for (var i = 0; i < result.length; i++){
+                    data.push({label:result[i][0],data:result[i][1]})
+                }
+  				drawPieChart(data)
+			})
+            
+       })
+    }
+	</script>
